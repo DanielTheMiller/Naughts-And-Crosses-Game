@@ -11,6 +11,7 @@ namespace TicTacToe.Models
     public class Grid: IGrid
     {
         int tokenCount = 0;
+        private Dictionary<Point, char> grid = new();
 
         public List<Point> GetAvailableCells()
         {
@@ -29,12 +30,13 @@ namespace TicTacToe.Models
             return cells;
         }
 
-        public string GetCell(Point coord)
+        public char GetCell(Point coord)
         {
-            return "X";
+            var tokenRetrieved = grid[coord];
+            return tokenRetrieved;
         }
 
-        public void SetCell(string token, Point coord)
+        public void SetCell(char token, Point coord)
         {
             if (coord.X < 0 || coord.Y < 0 || coord.X >= 3 || coord.Y >= 3)
             {

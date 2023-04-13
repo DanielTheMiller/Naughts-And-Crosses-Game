@@ -10,8 +10,8 @@ namespace TickTacToeTests
     {
         private Grid grid = new Grid();
 
-        private const string X_TOKEN = "X"; // This might become an enum or clas
-        private const string O_TOKEN = "O";
+        private const char X_TOKEN = 'X'; // This might become an enum or clas
+        private const char O_TOKEN = 'O';
 
         private const int GRID_LENGTH = 3;
         private const int GRID_HEIGHT = 3;
@@ -138,6 +138,10 @@ namespace TickTacToeTests
                 var token = grid.GetCell(coord);
                 Assert.NotNull(token);
                 Assert.Equal(X_TOKEN, token);
+                grid.SetCell(O_TOKEN, coord);
+                token = grid.GetCell(coord);
+                Assert.NotNull(token);
+                Assert.Equal(O_TOKEN, token);
             });
         }
     }
