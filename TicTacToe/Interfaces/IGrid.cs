@@ -8,7 +8,7 @@ namespace TicTacToe.Interfaces
 
         char GetCell(Point coord);
 
-        void SetCell(char token, Point coord);
+        void SetCell(Point coord, char token);
 
         void Reset();
     }

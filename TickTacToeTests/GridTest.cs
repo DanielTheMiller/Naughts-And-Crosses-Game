@@ -12,6 +12,7 @@ namespace TickTacToeTests
 
         private const char X_TOKEN = 'X'; // This might become an enum or clas
         private const char O_TOKEN = 'O';
+        private const char NO_TOKEN = '-';
 
         private const int GRID_LENGTH = 3;
         private const int GRID_HEIGHT = 3;
@@ -65,13 +66,23 @@ namespace TickTacToeTests
         }
 
         [Fact]
+        public void SetTokenDoesNotAppearInAvailableCells()
+        {
+            var token = new Point(1, 1);
+            grid.SetCell(token, X_TOKEN);
+            var availableCells = grid.GetAvailableCells();
+            Assert.NotNull(availableCells);
+            Assert.DoesNotContain(token, availableCells);
+        }
+
+        [Fact]
         public void CanAddTokensToGrid()
         {
             var currentToken = O_TOKEN;
 
             RunLambdaOnAllCells((Point coord) =>
             {
-                grid.SetCell(currentToken, coord);
+                grid.SetCell(coord, currentToken);
                 currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
             });
         }
@@ -85,7 +96,7 @@ namespace TickTacToeTests
             {
                 for (int colIndex = -1; colIndex < GRID_LENGTH+1; colIndex+=GRID_LENGTH+1)
                 {
-                    Assert.Throws<ArgumentOutOfRangeException>(() => grid.SetCell(currentToken, new(rowIndex, colIndex)));
+                    Assert.Throws<ArgumentOutOfRangeException>(() => grid.SetCell(new(rowIndex, colIndex), currentToken));
                     currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
                     attempts++;
                 }
@@ -120,6 +131,20 @@ namespace TickTacToeTests
         }
 
         [Fact]
+        public void ACellCanBeSetAndThenReset()
+        {
+            var coord = new Point(1, 1);
+            var currentToken = grid.GetCell(coord);
+            Assert.Equal(NO_TOKEN, currentToken);
+            grid.SetCell(coord, X_TOKEN);
+            currentToken = grid.GetCell(coord);
+            Assert.Equal(X_TOKEN, currentToken);
+            grid.Reset();
+            currentToken = grid.GetCell(coord);
+            Assert.Equal(NO_TOKEN, currentToken);
+        }
+
+        [Fact]
         public void CanGetEachCellFromNewGrid()
         {
             RunLambdaOnAllCells((Point coord) =>
@@ -134,15 +159,38 @@ namespace TickTacToeTests
         {
             RunLambdaOnAllCells((Point coord) =>
             {
-                grid.SetCell(X_TOKEN, coord);
+                grid.SetCell(coord, X_TOKEN);
                 var token = grid.GetCell(coord);
-                Assert.NotNull(token);
                 Assert.Equal(X_TOKEN, token);
-                grid.SetCell(O_TOKEN, coord);
+                grid.SetCell(coord, O_TOKEN);
                 token = grid.GetCell(coord);
-                Assert.NotNull(token);
                 Assert.Equal(O_TOKEN, token);
             });
+        }
+
+        [Fact]
+        public void EmptyTokenIsSymbol() // Confirm that the empty token is not null or empty string
+        {
+            Assert.Equal(NO_TOKEN, grid.GetCell(new(0, 0)));
+        }
+
+        [Fact]
+        public void InvalidTokensThrowException()
+        {
+            var coord = new Point(1, 1);
+            var validTokens = new char[] { NO_TOKEN, X_TOKEN, O_TOKEN };
+            for (char token = char.MinValue; token < char.MaxValue; token++)
+            {
+                if (validTokens.Contains(token))
+                {
+                    grid.SetCell(coord, token);
+                    grid.Reset();
+                } else
+                {
+                    Assert.Throws<ArgumentException>(() => { grid.SetCell(coord, token); });
+                    grid.Reset();
+                }
+            }
         }
     }
 
