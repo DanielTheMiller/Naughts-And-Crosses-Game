@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks.Dataflow;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
 
@@ -10,6 +11,10 @@ namespace TickTacToeTests
 
         private const string X_TOKEN = "X"; // This might become an enum or clas
         private const string O_TOKEN = "O";
+
+        private const int GRID_LENGTH = 3;
+        private const int GRID_HEIGHT = 3;
+        private readonly int GRID_CELL_COUNT = GRID_HEIGHT * GRID_LENGTH;
 
         [Fact]
         public void CanInstantiateGridClassSuccessfully()
@@ -39,6 +44,7 @@ namespace TickTacToeTests
             Assert.Equal(9, distinctCells.Count);
         }
 
+        [Fact]
         public void NewGridReturns9AvailableCells()
         {
             var availableCells = grid.GetAvailableCells();
@@ -46,6 +52,7 @@ namespace TickTacToeTests
             Assert.Equal(9, availableCells.Count);
         }
 
+        [Fact]
         public void CanAddTokensToGrid()
         {
             var currentToken = O_TOKEN;
@@ -58,5 +65,49 @@ namespace TickTacToeTests
                 }
             }
         }
+
+        [Fact]
+        public void GridAddRejectsInvalidCoordinates()
+        {
+            var currentToken = O_TOKEN;
+            var attempts = 0;
+            for (int rowIndex = -1; rowIndex < 4; rowIndex+=4)
+            {
+                for (int colIndex = -1; colIndex < 4; colIndex+=4)
+                {
+                    Assert.Throws<ArgumentOutOfRangeException>(() => grid.AddToken(currentToken, new(rowIndex, colIndex)));
+                    currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
+                    attempts++;
+                }
+            }
+            Assert.Equal(4, attempts); // I just want to make sure the loop went all of the way through
+        }
+
+        [Fact]
+        public void FillingGridWithTokensLimitsAvailableGridCellsReturned()
+        {
+            CanAddTokensToGrid();
+            var availableCells = grid.GetAvailableCells();
+            Assert.NotNull(availableCells);
+            Assert.Empty(availableCells);
+        }
+
+        [Fact]
+        public void GridCanBeReset()
+        {
+            grid.Reset();
+        }
+
+        [Fact]
+        public void FillGridWithTokensAndThenResettingMakesAllCellsAvailableAgain()
+        {
+            CanAddTokensToGrid();
+            var availableCells = grid.GetAvailableCells();
+            Assert.Empty(availableCells);
+            grid.Reset();
+            availableCells = grid.GetAvailableCells();
+            Assert.Equal(GRID_CELL_COUNT, availableCells.Count);
+        }
     }
+
 }
