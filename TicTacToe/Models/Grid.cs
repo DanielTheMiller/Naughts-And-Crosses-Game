@@ -62,5 +62,12 @@ namespace TicTacToe.Models
         {
             grid.Clear();
         }
+
+        private List<List<char>> getLines()
+        {
+            //get rows
+            var firstRow = new List<char>() { GetCell(new(0, 0)), GetCell(new(0, 0)), GetCell(new(0, 0)) };
+            return new() { firstRow, firstRow, firstRow, firstRow, firstRow, firstRow, firstRow, firstRow };
+        }
     }
 }

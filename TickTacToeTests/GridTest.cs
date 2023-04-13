@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
 using TicTacToe.Interfaces;
@@ -14,15 +15,14 @@ namespace TickTacToeTests
         private const char O_TOKEN = 'O';
         private const char NO_TOKEN = '-';
 
-        private const int GRID_LENGTH = 3;
-        private const int GRID_HEIGHT = 3;
-        private readonly int GRID_CELL_COUNT = GRID_HEIGHT * GRID_LENGTH;
+        private const int GRID_LENGTH_HEIGHT = 3;
+        private readonly int GRID_CELL_COUNT = GRID_LENGTH_HEIGHT * GRID_LENGTH_HEIGHT;
 
         private void RunLambdaOnAllCells(Action<Point> lambdaExpression)
         {
-            for (int rowIndex = 0; rowIndex < GRID_HEIGHT; rowIndex++)
+            for (int rowIndex = 0; rowIndex < GRID_LENGTH_HEIGHT; rowIndex++)
             {
-                for (int colIndex = 0; colIndex < GRID_LENGTH; colIndex++)
+                for (int colIndex = 0; colIndex < GRID_LENGTH_HEIGHT; colIndex++)
                 {
                     lambdaExpression(new(rowIndex, colIndex));
                 }
@@ -92,9 +92,9 @@ namespace TickTacToeTests
         {
             var currentToken = O_TOKEN;
             var attempts = 0;
-            for (int rowIndex = -1; rowIndex < GRID_HEIGHT+1; rowIndex+= GRID_HEIGHT+1)
+            for (int rowIndex = -1; rowIndex < GRID_LENGTH_HEIGHT + 1; rowIndex+= GRID_LENGTH_HEIGHT + 1)
             {
-                for (int colIndex = -1; colIndex < GRID_LENGTH+1; colIndex+=GRID_LENGTH+1)
+                for (int colIndex = -1; colIndex < GRID_LENGTH_HEIGHT + 1; colIndex+= GRID_LENGTH_HEIGHT + 1)
                 {
                     Assert.Throws<ArgumentOutOfRangeException>(() => grid.SetCell(new(rowIndex, colIndex), currentToken));
                     currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
@@ -192,6 +192,41 @@ namespace TickTacToeTests
                 }
             }
         }
-    }
 
+        [Fact]
+        public void GetLinesReturnsListOfLines()
+        {
+            var getLinesMethod = typeof(Grid).GetMethod("getLines", BindingFlags.NonPublic | BindingFlags.Instance);
+            var lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+            Assert.NotNull(lines);
+            Assert.NotEmpty(lines);
+            var firstLine = lines.FirstOrDefault();
+            Assert.NotNull(firstLine);
+            Assert.Contains(NO_TOKEN, firstLine);
+            Assert.DoesNotContain(O_TOKEN, firstLine);
+            Assert.DoesNotContain(X_TOKEN, firstLine);
+        }
+
+        [Fact]
+        public void GetLinesReturnsAllXWhenGridIsAllX()
+        {
+            RunLambdaOnAllCells((point) => grid.SetCell(point, X_TOKEN));
+            var getLinesMethod = typeof(Grid).GetMethod("getLines", BindingFlags.NonPublic | BindingFlags.Instance);
+            var lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+            var firstLine = lines.FirstOrDefault();
+            Assert.NotNull(firstLine); Assert.Contains(X_TOKEN, firstLine);
+            Assert.DoesNotContain(O_TOKEN, firstLine);
+            Assert.DoesNotContain(NO_TOKEN, firstLine);
+        }
+
+        [Fact]
+        public void GetLinesReturnsAllLines()
+        {
+            var noOfLinesToAnticipate = (GRID_LENGTH_HEIGHT * 2)+2; // Line for each row/column and 2 diagonal lines
+            var getLinesMethod = typeof(Grid).GetMethod("getLines", BindingFlags.NonPublic | BindingFlags.Instance);
+            var lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+            Assert.NotNull(lines);
+            Assert.Equal(noOfLinesToAnticipate, lines.Count);
+        }
+    }
 }
