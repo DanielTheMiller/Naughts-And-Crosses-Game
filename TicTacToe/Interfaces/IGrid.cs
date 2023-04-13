@@ -6,7 +6,9 @@ namespace TicTacToe.Interfaces
     {
         List<Point> GetAvailableCells();
 
-        void AddToken(string token, Point coord);
+        string GetCell(Point coord);
+
+        void SetCell(string token, Point coord);
 
         void Reset();
     }

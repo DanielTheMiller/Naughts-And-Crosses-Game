@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
 using TicTacToe.Interfaces;
@@ -15,6 +16,17 @@ namespace TickTacToeTests
         private const int GRID_LENGTH = 3;
         private const int GRID_HEIGHT = 3;
         private readonly int GRID_CELL_COUNT = GRID_HEIGHT * GRID_LENGTH;
+
+        private void RunLambdaOnAllCells(Action<Point> lambdaExpression)
+        {
+            for (int rowIndex = 0; rowIndex < GRID_HEIGHT; rowIndex++)
+            {
+                for (int colIndex = 0; colIndex < GRID_LENGTH; colIndex++)
+                {
+                    lambdaExpression(new(rowIndex, colIndex));
+                }
+            }
+        }
 
         [Fact]
         public void CanInstantiateGridClassSuccessfully()
@@ -56,14 +68,12 @@ namespace TickTacToeTests
         public void CanAddTokensToGrid()
         {
             var currentToken = O_TOKEN;
-            for (int rowIndex = 0; rowIndex < 3; rowIndex++)
+
+            RunLambdaOnAllCells((Point coord) =>
             {
-                for (int colIndex = 0; colIndex < 3; colIndex++)
-                {
-                    grid.AddToken(currentToken, new(rowIndex, colIndex));
-                    currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
-                }
-            }
+                grid.SetCell(currentToken, coord);
+                currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
+            });
         }
 
         [Fact]
@@ -71,11 +81,11 @@ namespace TickTacToeTests
         {
             var currentToken = O_TOKEN;
             var attempts = 0;
-            for (int rowIndex = -1; rowIndex < 4; rowIndex+=4)
+            for (int rowIndex = -1; rowIndex < GRID_HEIGHT+1; rowIndex+= GRID_HEIGHT+1)
             {
-                for (int colIndex = -1; colIndex < 4; colIndex+=4)
+                for (int colIndex = -1; colIndex < GRID_LENGTH+1; colIndex+=GRID_LENGTH+1)
                 {
-                    Assert.Throws<ArgumentOutOfRangeException>(() => grid.AddToken(currentToken, new(rowIndex, colIndex)));
+                    Assert.Throws<ArgumentOutOfRangeException>(() => grid.SetCell(currentToken, new(rowIndex, colIndex)));
                     currentToken = currentToken == O_TOKEN ? X_TOKEN : O_TOKEN; // Toggle current token
                     attempts++;
                 }
@@ -107,6 +117,28 @@ namespace TickTacToeTests
             grid.Reset();
             availableCells = grid.GetAvailableCells();
             Assert.Equal(GRID_CELL_COUNT, availableCells.Count);
+        }
+
+        [Fact]
+        public void CanGetEachCellFromNewGrid()
+        {
+            RunLambdaOnAllCells((Point coord) =>
+            {
+                var token = grid.GetCell(coord);
+                Assert.NotNull(token);
+            });
+        }
+
+        [Fact]
+        public void AssureEqualityAfterGettingAndSettingEachCell()
+        {
+            RunLambdaOnAllCells((Point coord) =>
+            {
+                grid.SetCell(X_TOKEN, coord);
+                var token = grid.GetCell(coord);
+                Assert.NotNull(token);
+                Assert.Equal(X_TOKEN, token);
+            });
         }
     }
 

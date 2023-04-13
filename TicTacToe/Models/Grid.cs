@@ -29,7 +29,12 @@ namespace TicTacToe.Models
             return cells;
         }
 
-        public void AddToken(string token, Point coord)
+        public string GetCell(Point coord)
+        {
+            return "X";
+        }
+
+        public void SetCell(string token, Point coord)
         {
             if (coord.X < 0 || coord.Y < 0 || coord.X >= 3 || coord.Y >= 3)
             {
