@@ -228,5 +228,44 @@ namespace TickTacToeTests
             Assert.NotNull(lines);
             Assert.Equal(noOfLinesToAnticipate, lines.Count);
         }
+
+        [Fact]
+        public void GetLinesRespondsToChange()
+        {
+            RunLambdaOnAllCells((point) => grid.SetCell(point, X_TOKEN));
+            var getLinesMethod = typeof(Grid).GetMethod("getLines", BindingFlags.NonPublic | BindingFlags.Instance);
+            var lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+            var firstLine = lines.FirstOrDefault();
+            Assert.NotNull(firstLine); Assert.Contains(X_TOKEN, firstLine);
+            Assert.DoesNotContain(O_TOKEN, firstLine);
+            Assert.DoesNotContain(NO_TOKEN, firstLine);
+            
+            //Change all of the cells
+            RunLambdaOnAllCells((point) => grid.SetCell(point, O_TOKEN));
+            lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+            firstLine = lines.FirstOrDefault();
+            Assert.NotNull(firstLine); Assert.Contains(O_TOKEN, firstLine); // Ensure it's actually changed
+            Assert.DoesNotContain(X_TOKEN, firstLine);
+            Assert.DoesNotContain(NO_TOKEN, firstLine);
+        }
+
+        [Fact]
+        public void GetLinesShouldOnlyHave1CompleteLineWhenTheFirstRowIsComplete()
+        {
+            grid.SetCell(new Point(0, 0), X_TOKEN);
+            grid.SetCell(new Point(1, 0), X_TOKEN);
+            grid.SetCell(new Point(2, 0), X_TOKEN);
+            var getLinesMethod = typeof(Grid).GetMethod("getLines", BindingFlags.NonPublic | BindingFlags.Instance);
+            var lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+
+            var successLineCount = 0;
+            foreach (List<char> line in lines) {
+                if (line.Count(x => x == X_TOKEN) == GRID_LENGTH_HEIGHT) { 
+                    successLineCount++; // Count the successful lines
+                } 
+            }
+
+            Assert.Equal(1, successLineCount);
+        }
     }
 }
