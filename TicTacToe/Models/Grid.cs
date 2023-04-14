@@ -8,6 +8,7 @@ namespace TicTacToe.Models
         private const char NO_TOKEN = '-';
         private const char O_TOKEN = 'O';
         private const char X_TOKEN = 'X';
+        private const int LENGTH_AND_HEIGHT = 3;
 
         private Dictionary<Point, char> grid = new();
 
@@ -65,9 +66,34 @@ namespace TicTacToe.Models
 
         private List<List<char>> getLines()
         {
-            //get rows
-            var firstRow = new List<char>() { GetCell(new(0, 0)), GetCell(new(0, 0)), GetCell(new(0, 0)) };
-            return new() { firstRow, firstRow, firstRow, firstRow, firstRow, firstRow, firstRow, firstRow };
+            List<List<char>> lines = new() {};
+
+            //Grab row and column lines
+            for (int rowIndex = 0; rowIndex < 3; rowIndex++)
+            {
+                List<char> row = new();
+                List<char> column = new();
+                for (int colIndex = 0; colIndex < 3; colIndex++)
+                {
+                    row.Add(GetCell(new(rowIndex, colIndex)));
+                    column.Add(GetCell(new(colIndex, rowIndex)));
+                }
+                lines.Add(row);
+                lines.Add(column);
+            }
+
+            List<char> diag1 = new();
+            List<char> diag2 = new();
+            //Grab diagonal lines
+            for (int index = 0; index < LENGTH_AND_HEIGHT; index++)
+            {
+                diag1.Add(GetCell(new(index, index)));
+                diag2.Add(GetCell(new(index, LENGTH_AND_HEIGHT - (index + 1))));
+            }
+            lines.Add(diag1);
+            lines.Add(diag2);
+
+            return lines;
         }
     }
 }
