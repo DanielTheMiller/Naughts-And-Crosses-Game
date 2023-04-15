@@ -7,7 +7,7 @@ namespace TicTacToeTests
 {
     public class GridTest
     {
-        private Grid grid = new Grid();
+        private IGrid grid = new Grid();
 
         private const char X_TOKEN = 'X'; // This might become an enum or clas
         private const char O_TOKEN = 'O';
@@ -271,7 +271,17 @@ namespace TicTacToeTests
         {
             var completedLines = grid.GetCompletedLines();
             Assert.NotNull(completedLines);
-            Assert.NotEqual(0, completedLines.Count);
+            Assert.Empty(completedLines); // A new grid should have no compelete lines
+        }
+
+        [Fact]
+        public void GridHasMaxCompleteLinesWhenGridIsFull()
+        {
+            var anticipatedLines = (GRID_LENGTH_HEIGHT * 2) + 2;
+            RunLambdaOnAllCells((point) => { grid.SetCell(point, X_TOKEN); });
+            var completedLines = grid.GetCompletedLines();
+            Assert.NotNull(completedLines);
+            Assert.Equal(anticipatedLines, completedLines.Count);
         }
     }
 }

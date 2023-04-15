@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TicTacToe.Interfaces;
+using TicTacToe.Services;
 
 namespace TicTacToeTests
 {
     public class GameServiceTests
     {
+        IGameService gameService = new GameService();
+
+        public void GameServiceCanBeConstructed()
+        {
+            gameService = new GameService();
+        }
+
+        public void ServiceHasPublicLaunchMethod()
+        {
+            gameService.LaunchGame();
+        }
     }
 }

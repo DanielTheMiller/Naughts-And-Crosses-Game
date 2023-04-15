@@ -64,6 +64,14 @@ namespace TicTacToe.Models
             grid.Clear();
         }
 
+        public List<List<char>> GetCompletedLines()
+        {
+            return getLines()
+                .Where(l => l.Contains(NO_TOKEN) == false) // Where lines contained no spaces
+                .Where(l => l.Distinct().ToList().Count == 1) // Where lines contain only 1 distinct token (i.e. X,X,X)
+                .ToList();
+        }
+
         private List<List<char>> getLines()
         {
             List<List<char>> lines = new() {};
