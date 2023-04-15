@@ -11,5 +11,7 @@ namespace TicTacToe.Interfaces
         void SetCell(Point coord, char token);
 
         void Reset();
+
+        List<List<char>> GetCompletedLines();
     }
 }

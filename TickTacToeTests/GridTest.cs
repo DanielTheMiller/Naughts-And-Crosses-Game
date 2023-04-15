@@ -1,11 +1,9 @@
 using System.Drawing;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks.Dataflow;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
 
-namespace TickTacToeTests
+namespace TicTacToeTests
 {
     public class GridTest
     {
@@ -256,7 +254,7 @@ namespace TickTacToeTests
             grid.SetCell(new Point(1, 0), X_TOKEN);
             grid.SetCell(new Point(2, 0), X_TOKEN);
             var getLinesMethod = typeof(Grid).GetMethod("getLines", BindingFlags.NonPublic | BindingFlags.Instance);
-            var lines = (List<List<char>>)getLinesMethod.Invoke(grid, Array.Empty<object>());
+            var lines = getLinesMethod.Invoke(grid, Array.Empty<object>()) as List<List<char>>;
 
             var successLineCount = 0;
             foreach (List<char> line in lines) {
@@ -266,6 +264,14 @@ namespace TickTacToeTests
             }
 
             Assert.Equal(1, successLineCount);
+        }
+
+        [Fact]
+        public void GridHasGetCompleteLinesMethod()
+        {
+            var completedLines = grid.GetCompletedLines();
+            Assert.NotNull(completedLines);
+            Assert.NotEqual(0, completedLines.Count);
         }
     }
 }
