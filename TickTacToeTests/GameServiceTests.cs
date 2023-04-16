@@ -16,5 +16,11 @@ namespace TicTacToeTests
         {
             gameService.LaunchGame();
         }
+
+        public void ServiceInitialltyCallsEstablishPlayerIdentityOfUserInterface()
+        {
+            gameService.LaunchGame();
+            
+        }
     }
 }
