@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
+using TicTacToe.Models.Enums;
 
 namespace TicTacToeTests
 {
@@ -26,6 +27,8 @@ namespace TicTacToeTests
         [Fact]
         public void CanTriggerEstablishPlayerIdentity() {
             userInterface.EstablishPlayerIdentity();
+            Assert.NotNull(userInterface.Players);
+            Assert.Equal(2 , userInterface.Players.Count);
         }
     }
 }

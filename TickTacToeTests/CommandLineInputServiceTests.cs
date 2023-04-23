@@ -4,13 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TicTacToe.Interfaces;
 using TicTacToe.Services;
 
 namespace TicTacToeTests
 {
     public class CommandLineInputServiceTests
     {
-        private CommandLineInputService _service;
+        private ICommandLineInputService _service;
 
         public CommandLineInputServiceTests()
         {
