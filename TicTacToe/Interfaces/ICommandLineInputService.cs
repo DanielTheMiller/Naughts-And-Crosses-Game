@@ -8,6 +8,6 @@ namespace TicTacToe.Interfaces
 {
     public interface ICommandLineInputService
     {
-        public string ReadNextInput();
+        public string ReadNextInput(string promptForUser);
     }
 }

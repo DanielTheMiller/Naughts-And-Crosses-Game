@@ -11,9 +11,10 @@ namespace TicTacToe.Services
     {
         public CommandLineInputService() { }
 
-        public string ReadNextInput()
+        public string ReadNextInput(string promptForUser)
         {
-            return Console.ReadLine();
+            Console.WriteLine(promptForUser);
+            return Console.ReadLine() ?? "";
         }
     }
 }

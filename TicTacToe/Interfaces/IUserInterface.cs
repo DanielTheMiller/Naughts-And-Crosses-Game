@@ -8,7 +8,7 @@ using TicTacToe.Models;
 namespace TicTacToe.Interfaces
 {
     public interface IUserInterface
-    {  
+    {
         List<Player> Players { get; }
 
         public void EstablishPlayerIdentity();
