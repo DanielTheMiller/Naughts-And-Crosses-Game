@@ -13,8 +13,14 @@ namespace TicTacToe.Models
 
         public char Token { get; set; }
 
+        private readonly char[] validTokens = new char[] { 'X', 'O' };
+
         public Player(string name, char token)
         {
+            if (!validTokens.Contains(token))
+            {
+                throw new ArgumentException($"Invalid token {token} used in Player constructor. Valid tokens are: ({string.Join(", ",validTokens)})");
+            }
             Name = name;
             Token = token;
         }

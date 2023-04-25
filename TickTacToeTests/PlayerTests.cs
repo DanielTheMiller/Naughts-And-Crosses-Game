@@ -7,6 +7,7 @@ namespace TicTacToeTests
     public class PlayerTests
     {
         const char DEFAULT_TOKEN = 'X';
+        private readonly char[] VALID_TOKENS = new char[] { 'X', 'O' };
 
         Player _player;
 
@@ -45,6 +46,22 @@ namespace TicTacToeTests
         {
             Assert.NotNull(_player.Token);
             Assert.Equal(DEFAULT_TOKEN, _player.Token);
+        }
+
+        [Fact]
+        public void PlayerConstructorDisallowsInvalidToken()
+        {
+            for (char character = char.MinValue; character < char.MaxValue; character++)
+            {
+                var tokenIsValid = VALID_TOKENS.Contains(character);
+                if (tokenIsValid) {
+                    var newPlayer = new Player("PlayerName", character); // Make sure this works fine
+                } 
+                else
+                {
+                    Assert.Throws<ArgumentException>(() => new Player("PlayerName", character)); // Make sure this fails
+                }    
+            }
         }
     }
 }

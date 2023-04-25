@@ -16,8 +16,10 @@ namespace TicTacToe.Models
 
         public void EstablishPlayerIdentity()
         {
-            Players.Add(new Player("test", 'l'));
-            Players.Add(new Player("test2", 'o'));
+            var player1name = _commandLineInterface.ReadNextInput("Insert the name of Player 1:");
+            Players.Add(new Player(player1name, 'X'));
+            var player2name = _commandLineInterface.ReadNextInput("Insert the name of Player 2:");
+            Players.Add(new Player(player2name, 'O'));
         }
         public CommandLineInterface(ICommandLineInputService commandLineInterfaceService)
         {
