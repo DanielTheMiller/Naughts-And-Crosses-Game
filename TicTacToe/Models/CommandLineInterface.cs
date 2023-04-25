@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,12 @@ namespace TicTacToe.Models
 
         public List<Player> Players { get; private set; }
 
+        public CommandLineInterface(ICommandLineInputService commandLineInterfaceService)
+        {
+            _commandLineInterface = commandLineInterfaceService;
+            Players = new List<Player>();
+        }
+
         public void EstablishPlayerIdentity()
         {
             var player1name = _commandLineInterface.ReadNextInput("Insert the name of Player 1:");
@@ -21,10 +28,15 @@ namespace TicTacToe.Models
             var player2name = _commandLineInterface.ReadNextInput("Insert the name of Player 2:");
             Players.Add(new Player(player2name, 'O'));
         }
-        public CommandLineInterface(ICommandLineInputService commandLineInterfaceService)
+
+        public Player GetCurrentPlayer()
         {
-            _commandLineInterface = commandLineInterfaceService;
-            Players = new List<Player>();
+            return Players.First();
+        }
+
+        public KeyValuePair<char, Point> GetNextMove()
+        {
+            return new KeyValuePair<char, Point>('O', new Point(0,1));
         }
     }
 }

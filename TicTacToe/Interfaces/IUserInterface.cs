@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,5 +13,9 @@ namespace TicTacToe.Interfaces
         List<Player> Players { get; }
 
         public void EstablishPlayerIdentity();
+
+        public Player GetCurrentPlayer();
+
+        public KeyValuePair<char, Point> GetNextMove();
     }
 }
