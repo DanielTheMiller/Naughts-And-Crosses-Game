@@ -283,5 +283,21 @@ namespace TicTacToeTests
             Assert.NotNull(completedLines);
             Assert.Equal(anticipatedLines, completedLines.Count);
         }
+
+        [Fact]
+        public void GetPointFromIndexReturnsCorrectValues()
+        {
+            var pointIndex = 1;
+            for (int yIndex = 0; yIndex < GRID_LENGTH_HEIGHT; yIndex++)
+            {
+                for (int xIndex = 0; xIndex < GRID_LENGTH_HEIGHT; xIndex++)
+                {
+                    var point = Grid.GetPointFromIndex(pointIndex);
+                    Assert.NotNull(point);
+                    Assert.Equal(new Point(xIndex, yIndex), point);
+                    pointIndex++;
+                }
+            }
+        }
     }
 }

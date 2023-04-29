@@ -1,8 +1,10 @@
 ﻿using Moq;
+using NuGet.Frameworks;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using TicTacToe.Interfaces;
@@ -18,6 +20,7 @@ namespace TicTacToeTests
 
         const string GET_PLAYER_1_NAME = "Insert the name of Player 1:";
         const string GET_PLAYER_2_NAME = "Insert the name of Player 2:";
+        const string INSERT_NEXT_MOVE_PROMPT = ", Insert a number to place your next move:";
         private readonly char[] validTokens = new char[] { 'X', 'O' }; 
 
         public UserInterfaceTests()
@@ -57,12 +60,66 @@ namespace TicTacToeTests
         }
 
         [Fact]
-        public void GetNextMoveFromUI()
+        public void GetNextMoveFromUIHasValidParams()
         {
             userInterface.EstablishPlayerIdentity();
+            commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
             KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
             Assert.NotNull(nextMove);
+            Assert.NotNull(nextMove.Key);
+            Assert.NotNull(nextMove.Value);
             Assert.Contains(nextMove.Key, validTokens);
+            Assert.True(nextMove.Value.X >= 0);
+            Assert.True(nextMove.Value.Y >= 0);
+            Assert.True(nextMove.Value.X <= 2);
+            Assert.True(nextMove.Value.Y <= 2);
         }
+
+        [Fact]
+        public void UIGetsNextMoveFromTheCommandLine()
+        {
+            userInterface.EstablishPlayerIdentity();
+            commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
+            KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
+            commandLineInputServiceMock.Verify(x => x.ReadNextInput(It.Is<string>((inputCommand) => inputCommand.Contains(INSERT_NEXT_MOVE_PROMPT)))); // Using a contains because this prompt should be personalised
+        }
+
+        [Fact]
+        public void UIReturnsAppropriatePointForGivenIndexFromCommandLine()
+        {
+            userInterface.EstablishPlayerIdentity();
+            var pointIndex = 1;
+            Action<ICommandLineInputService> previousExpression = (s) => { return; };
+            for (int yIndex = 0; yIndex <= 2; yIndex++)
+            {
+                for (int xIndex = 0; xIndex <= 2; xIndex++)
+                {
+                    commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns(pointIndex.ToString());
+                    KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
+                    var point = nextMove.Value;
+                    Assert.True(point.X == xIndex && point.Y == yIndex, $"Was expecting Point(x:{xIndex}, y:{yIndex}) from index {pointIndex}; But instead got Point(x:{point.X}, y:{point.Y})");
+                    pointIndex++;
+                }
+            }
+        }
+
+        [Fact]
+        public void EnsureGetNextMoveReturnsCurrentPlayersToken()
+        {
+            userInterface.EstablishPlayerIdentity();
+            var currentPlayer = userInterface.GetCurrentPlayer();
+            commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
+            var nextMove = userInterface.GetNextMove();
+            Assert.Equal(nextMove.Key, currentPlayer.Token);
+        }
+
+        //[Fact]
+        //public void UserProvidingNonNumberShouldNotThrowException()
+        //{
+        //    userInterface.EstablishPlayerIdentity();
+        //    commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("Not a number");
+        //    var nextMove = userInterface.GetNextMove();
+        //    Assert.NotNull(nextMove);
+        //}
     }
 }

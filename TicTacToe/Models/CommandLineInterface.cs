@@ -36,7 +36,12 @@ namespace TicTacToe.Models
 
         public KeyValuePair<char, Point> GetNextMove()
         {
-            return new KeyValuePair<char, Point>('O', new Point(0,1));
+            var currentPlayer = GetCurrentPlayer();
+            var prompt = $"{currentPlayer.Name}, Insert a number to place your next move:";
+            var nextMoveIndex = _commandLineInterface.ReadNextInput(prompt);
+            var nextMoveIndexInt = int.Parse(nextMoveIndex);
+            var nextPoint = Grid.GetPointFromIndex(nextMoveIndexInt);
+            return new KeyValuePair<char, Point>(currentPlayer.Token, nextPoint);
         }
     }
 }

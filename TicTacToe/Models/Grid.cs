@@ -59,6 +59,14 @@ namespace TicTacToe.Models
             }
         }
 
+        public static Point GetPointFromIndex(int pointIndex)
+        {
+            pointIndex--;
+            int yIndex = pointIndex / 3;
+            int xIndex = pointIndex % 3;
+            return new Point(xIndex, yIndex);
+        }
+
         public void Reset()
         {
             grid.Clear();
