@@ -123,5 +123,20 @@ namespace TicTacToeTests
             var nextMove = userInterface.GetNextMove();
             Assert.NotNull(nextMove);
         }
+
+        [Fact]
+        public void CanIntroduceGame()
+        {
+            userInterface.IntroduceGame();
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(It.IsAny<string>()),Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public void CanPresentLatestGrid()
+        {
+            var grid = new Grid();
+            userInterface.PresentLatestGrid(grid);
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(It.IsAny<string>()), Times.AtLeastOnce);
+        }
     }
 }

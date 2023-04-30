@@ -9,5 +9,7 @@ namespace TicTacToe.Interfaces
     public interface ICommandLineInputService
     {
         public string ReadNextInput(string promptForUser);
+
+        public void WritePrompt(string prompt);
     }
 }

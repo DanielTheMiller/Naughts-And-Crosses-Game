@@ -30,5 +30,12 @@ namespace TicTacToeTests
             var method = typeof(CommandLineInputService).GetMethod("ReadNextInput" , BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             Assert.NotNull(method);
         }
+
+        [Fact]
+        public void ClassHasWritePromptMethod()
+        {
+            var method = typeof(CommandLineInputService).GetMethod("WritePrompt", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            Assert.NotNull(method);
+        }
     }
 }
