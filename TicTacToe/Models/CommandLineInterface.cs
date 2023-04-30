@@ -62,7 +62,15 @@ namespace TicTacToe.Models
 
         public void PresentLatestGrid(Grid grid)
         {
-            _commandLineInterface.WritePrompt(grid.ToString());
+            var stringifiedGrid = "1|2|3\n4|5|6\n7|8|9";
+            var moves = grid.GetMoves();
+            foreach (var tokenPlacement in moves)
+            {
+                var pointIndex = tokenPlacement.Key;
+                var token = tokenPlacement.Value;
+                stringifiedGrid = stringifiedGrid.Replace(pointIndex.ToString(), token.ToString());
+            }
+            _commandLineInterface.WritePrompt(stringifiedGrid);
         }
     }
 }

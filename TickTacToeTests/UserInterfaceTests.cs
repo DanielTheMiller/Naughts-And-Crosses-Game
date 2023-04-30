@@ -21,6 +21,7 @@ namespace TicTacToeTests
         const string GET_PLAYER_1_NAME = "Insert the name of Player 1:";
         const string GET_PLAYER_2_NAME = "Insert the name of Player 2:";
         const string INSERT_NEXT_MOVE_PROMPT = ", Insert a number to place your next move:";
+        const string INITIAL_GRID_STRING = "1|2|3\n4|5|6\n7|8|9";
         private readonly char[] validTokens = new char[] { 'X', 'O' }; 
 
         public UserInterfaceTests()
@@ -137,6 +138,33 @@ namespace TicTacToeTests
             var grid = new Grid();
             userInterface.PresentLatestGrid(grid);
             commandLineInputServiceMock.Verify(x => x.WritePrompt(It.IsAny<string>()), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public void CheckInitialGridState()
+        {
+            var grid = new Grid();
+            userInterface.PresentLatestGrid(grid);
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(INITIAL_GRID_STRING), Times.Once);
+        }
+
+        [Fact]
+        public void SetThreeRandomGridTokensAndCheckThatTheyArePresentedToTheUserCorrectly()
+        {
+            var grid = new Grid();
+            var random = new Random();
+            var expectedResult = INITIAL_GRID_STRING;
+            for (int i = 0; i < 3; i++)
+            {
+                var availableCells = grid.GetAvailableCells();
+                var nextCoordIndex = random.Next(maxValue: availableCells.Count);
+                var coord = availableCells[nextCoordIndex];
+                grid.SetCell(coord, 'X');
+                var pointIndex = Grid.GetIndexFromPoint(coord);
+                expectedResult = expectedResult.Replace(pointIndex.ToString(), "X");
+            }
+            userInterface.PresentLatestGrid(grid);
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(expectedResult), Times.Once);
         }
     }
 }

@@ -10,6 +10,12 @@ namespace TicTacToe.Interfaces
 
         void SetCell(Point coord, char token);
 
+        /// <summary>
+        /// Return a dictionary of pointIndexes and tokens in them
+        /// </summary>
+        /// <returns>A dictionary of pointIndexes and tokens in them</returns>
+        IDictionary<int, char> GetMoves();
+
         void Reset();
 
         List<List<char>> GetCompletedLines();

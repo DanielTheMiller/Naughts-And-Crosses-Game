@@ -59,12 +59,22 @@ namespace TicTacToe.Models
             }
         }
 
+        public IDictionary<int, char> GetMoves()
+        {
+            return grid.ToDictionary(x => GetIndexFromPoint(x.Key), x => x.Value);
+        }
+
         public static Point GetPointFromIndex(int pointIndex)
         {
             pointIndex--;
             int yIndex = pointIndex / 3;
             int xIndex = pointIndex % 3;
             return new Point(xIndex, yIndex);
+        }
+
+        public static int GetIndexFromPoint(Point point)
+        {
+            return point.Y * 3 + point.X + 1;
         }
 
         public void Reset()

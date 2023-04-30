@@ -299,5 +299,33 @@ namespace TicTacToeTests
                 }
             }
         }
+
+        [Fact]
+        public void CanGetIndexFromPoint()
+        {
+            var pointIndex = Grid.GetIndexFromPoint(new Point(0,0));
+            Assert.NotNull(pointIndex);
+            Assert.True(pointIndex >= 0);
+
+            Assert.Equal(1, Grid.GetIndexFromPoint(new Point(0, 0)));
+            Assert.Equal(2, Grid.GetIndexFromPoint(new Point(1, 0)));
+            Assert.Equal(3, Grid.GetIndexFromPoint(new Point(2, 0)));
+            
+            Assert.Equal(4, Grid.GetIndexFromPoint(new Point(0, 1)));
+            Assert.Equal(5, Grid.GetIndexFromPoint(new Point(1, 1)));
+            Assert.Equal(6, Grid.GetIndexFromPoint(new Point(2, 1)));
+
+            Assert.Equal(7, Grid.GetIndexFromPoint(new Point(0, 2)));
+            Assert.Equal(8, Grid.GetIndexFromPoint(new Point(1, 2)));
+            Assert.Equal(9, Grid.GetIndexFromPoint(new Point(2, 2)));
+        }
+
+        [Fact]
+        public void CanGetMovesFromGrid()
+        {
+            var moves = grid.GetMoves();
+            Assert.NotNull(moves);
+            Assert.IsAssignableFrom<IDictionary<int, char>>(moves);
+        }
     }
 }
