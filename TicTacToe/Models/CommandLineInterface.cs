@@ -15,6 +15,8 @@ namespace TicTacToe.Models
 
         public List<Player> Players { get; private set; }
 
+        const string INCORRECT_INPUT_TRY_AGAIN_PROMPT = "Your input must be a number between 1 and 9. Try again";
+
         public CommandLineInterface(ICommandLineInputService commandLineInterfaceService)
         {
             _commandLineInterface = commandLineInterfaceService;
@@ -36,12 +38,20 @@ namespace TicTacToe.Models
 
         public KeyValuePair<char, Point> GetNextMove()
         {
-            var currentPlayer = GetCurrentPlayer();
-            var prompt = $"{currentPlayer.Name}, Insert a number to place your next move:";
-            var nextMoveIndex = _commandLineInterface.ReadNextInput(prompt);
-            var nextMoveIndexInt = int.Parse(nextMoveIndex);
-            var nextPoint = Grid.GetPointFromIndex(nextMoveIndexInt);
-            return new KeyValuePair<char, Point>(currentPlayer.Token, nextPoint);
+            while (true)
+            {
+                var currentPlayer = GetCurrentPlayer();
+                var prompt = $"{currentPlayer.Name}, Insert a number to place your next move:";
+                var nextMoveIndex = _commandLineInterface.ReadNextInput(prompt);
+                int nextMoveIndexInt;
+                var nextInputWasInteger = int.TryParse(nextMoveIndex, out nextMoveIndexInt);
+                if (nextInputWasInteger)
+                {
+                    var nextPoint = Grid.GetPointFromIndex(nextMoveIndexInt);
+                    return new KeyValuePair<char, Point>(currentPlayer.Token, nextPoint);
+                }
+                Console.WriteLine(INCORRECT_INPUT_TRY_AGAIN_PROMPT);
+            }
         }
     }
 }

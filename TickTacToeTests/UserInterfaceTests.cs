@@ -113,13 +113,15 @@ namespace TicTacToeTests
             Assert.Equal(nextMove.Key, currentPlayer.Token);
         }
 
-        //[Fact]
-        //public void UserProvidingNonNumberShouldNotThrowException()
-        //{
-        //    userInterface.EstablishPlayerIdentity();
-        //    commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("Not a number");
-        //    var nextMove = userInterface.GetNextMove();
-        //    Assert.NotNull(nextMove);
-        //}
+        [Fact]
+        public void UserProvidingNonNumberShouldNotThrowException()
+        {
+            userInterface.EstablishPlayerIdentity();
+            commandLineInputServiceMock.SetupSequence(s => s.ReadNextInput(It.IsAny<string>()))
+                .Returns("Not a number")
+                .Returns("1");
+            var nextMove = userInterface.GetNextMove();
+            Assert.NotNull(nextMove);
+        }
     }
 }
