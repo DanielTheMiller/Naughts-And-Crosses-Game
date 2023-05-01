@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TicTacToe.Interfaces;
+using TicTacToe.Models;
 
 namespace TicTacToe.Services
 {
@@ -18,7 +19,11 @@ namespace TicTacToe.Services
 
         public void LaunchGame()
         {
+            userInterface.IntroduceGame();
             userInterface.EstablishPlayerIdentity();
+            var grid = new Grid();
+            userInterface.PresentLatestGrid(grid);
+            userInterface.GetNextMove();
         }
     }
 }
