@@ -11,15 +11,15 @@ namespace TicTacToeTests
         Mock<IUserInterface> userInterfaceMock;
         IGameService gameService;
         List<string> methodsInvoked = new(); //TODO: Remember to setup mocks so they feed this list
+        List<Player> examplePlayerArray = new() { new("P1", 'O'), new("P2", 'X') };
 
         private void SetupMethods()
         {
-            userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
             userInterfaceMock.Setup(x => x.IntroduceGame()).Callback(() => methodsInvoked.Add("IntroduceGame"));
             userInterfaceMock.Setup(x => x.GetCurrentPlayer()).Callback(() => methodsInvoked.Add("GetCurrentPlayer"));
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
             userInterfaceMock.Setup(x => x.GetNextMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
-            
+            userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity")); ;
         }
 
         public GameServiceTests()
@@ -112,16 +112,37 @@ namespace TicTacToeTests
         [Fact]
         public void CanChangeContextPlayer()
         {
+            var playersListField = typeof(GameService).GetField("players", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(playersListField);
+            playersListField.SetValue(gameService, examplePlayerArray);
             gameService.GetCurrentPlayer();//Get Current Player should probably be on the game service
             gameService.ToggleCurrentPlayer();
         }
 
         [Fact]
-        public void ContextPlayerTogglesAfterPlayerMakesMove()
+        public void ToggleCurrentPlayerChangesPlayer()
         {
             gameService.LaunchGame();
+            var player1 = gameService.GetCurrentPlayer();
+            var player2 = gameService.ToggleCurrentPlayer();
+            Assert.NotNull(player1);
+            Assert.NotNull(player2);
+            Assert.NotEqual(player1, player2);
+            var player3 = gameService.GetCurrentPlayer();
+            Assert.Equal(player2, player3);
+            var player4 = gameService.ToggleCurrentPlayer();
+            Assert.NotEqual(player3, player4);
+            Assert.Equal(player1, player4);
+        }
 
-            userInterfaceMock.Verify(x => x.ToggleCurrentPlayer(), Times.AtLeastOnce);
+        [Fact]
+        public void PlayersListIsBeingPopulatedFromUIEstablishPlayerIdentity()
+        {
+            gameService.LaunchGame();
+            var player1 = gameService.GetCurrentPlayer();
+            var player2 = gameService.ToggleCurrentPlayer();
+            Assert.Contains(player1, examplePlayerArray);
+            Assert.Contains(player2, examplePlayerArray);
         }
     }
 }
