@@ -12,7 +12,7 @@ namespace TicTacToe.Interfaces
     {
         List<Player> Players { get; }
 
-        public void EstablishPlayerIdentity();
+        public List<Player> EstablishPlayerIdentity();
 
         public Player GetCurrentPlayer();
 
