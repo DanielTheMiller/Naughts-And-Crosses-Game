@@ -1,4 +1,5 @@
 ﻿using Moq;
+using System.Drawing;
 using System.Reflection;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
@@ -18,8 +19,20 @@ namespace TicTacToeTests
             userInterfaceMock.Setup(x => x.IntroduceGame()).Callback(() => methodsInvoked.Add("IntroduceGame"));
             userInterfaceMock.Setup(x => x.GetCurrentPlayer()).Callback(() => methodsInvoked.Add("GetCurrentPlayer"));
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
-            userInterfaceMock.Setup(x => x.GetNextMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
+            userInterfaceMock.Setup(x => x.GetNextMove()).Returns(() => GetNextRandomMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
             userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
+        }
+
+        /// <summary>
+        /// Fetch next random valid move for the tests
+        /// </summary>
+        /// <returns>Next move</returns>
+        private KeyValuePair<char, Point> GetNextRandomMove()
+        {
+            var availableCells = gameService.Grid.GetAvailableCells();
+            Random random = new Random();
+            var nextCell = availableCells[random.Next(availableCells.Count)];
+            return new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, nextCell);
         }
 
         public GameServiceTests()
@@ -149,7 +162,7 @@ namespace TicTacToeTests
         public void CurrentPlayerAlternatesCorrectlyAsNextMovesAreCalled()
         {
             var playerRequestedList = new List<Player>();
-            userInterfaceMock.Setup(x => x.GetNextMove()).Callback(() => playerRequestedList.Add(gameService.GetCurrentPlayer()));
+            userInterfaceMock.Setup(x => x.GetNextMove()).Returns(() => GetNextRandomMove()).Callback(() => playerRequestedList.Add(gameService.GetCurrentPlayer()));
             gameService.LaunchGame();
             var player1 = examplePlayerArray.First();
             var player2 = examplePlayerArray.Last();
