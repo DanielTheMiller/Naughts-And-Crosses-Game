@@ -55,9 +55,9 @@ namespace TicTacToe.Services
             userInterface.IntroduceGame();
             players = userInterface.EstablishPlayerIdentity();
             currentPlayer = players.First();
-            userInterface.PresentLatestGrid(Grid);
             while (GameCompleted() == false)
             {
+                userInterface.PresentLatestGrid(Grid);
                 userInterface.SetCurrentPlayer(currentPlayer);
                 var move = userInterface.GetNextMove();
                 Grid.SetCell(move.Value, move.Key);

@@ -220,5 +220,15 @@ namespace TicTacToeTests
             var listOfAvailableCells = grid.GetAvailableCells();
             Assert.True(listOfCompletedLines.Count > 0 || listOfAvailableCells.Count == 0);
         }
+
+        [Fact]
+        public void EnsureGridIsPresentedEveryTurn()
+        {
+            gameService.LaunchGame();
+            var numberOfNextMoveCalls = methodsInvoked.Count(x => x == "GetNextMove");
+            var numberOfPresentLatestGridCalls = methodsInvoked.Count(x => x == "PresentLatestGrid");
+            Assert.True(numberOfNextMoveCalls > 0);
+            Assert.Equal(numberOfNextMoveCalls, numberOfPresentLatestGridCalls);
+        }
     }
 }
