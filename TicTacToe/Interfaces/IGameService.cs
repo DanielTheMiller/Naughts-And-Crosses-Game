@@ -9,9 +9,13 @@ namespace TicTacToe.Interfaces
 {
     public interface IGameService
     {
+        public Grid Grid { get; }
+
         public void LaunchGame();
 
         public Player GetCurrentPlayer();
+
+        public bool GameCompleted();
 
         /// <summary>
         /// Switch current contextual player to the opposing player

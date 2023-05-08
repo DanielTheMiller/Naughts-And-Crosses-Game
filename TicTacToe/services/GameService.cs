@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
+using TicTacToe.Models.Enums;
 
 namespace TicTacToe.Services
 {
@@ -14,9 +15,13 @@ namespace TicTacToe.Services
 
         private List<Player> players = new();
         private Player currentPlayer;
+        private GameState gameRunning = GameState.NotStarted;
+
+        public Grid Grid { get; private set; }
 
         public GameService(IUserInterface userInterfaceService)
         {
+            Grid = new Grid();
             this.userInterface = userInterfaceService;
         }
 
@@ -25,14 +30,39 @@ namespace TicTacToe.Services
             return currentPlayer;
         }
 
+        public bool GameCompleted()
+        {
+            if (gameRunning == GameState.Completed)
+            {
+                return true;
+            }
+            if (Grid.GetCompletedLines().Count > 0)
+            {
+                gameRunning = GameState.Completed;
+                return true;
+            }
+            if (Grid.GetAvailableCells().Count == 0)
+            {
+                gameRunning = GameState.Completed;
+                return true;
+            }
+            return false;
+        }
+
         public void LaunchGame()
         {
+            gameRunning = GameState.Running;
             userInterface.IntroduceGame();
             players = userInterface.EstablishPlayerIdentity();
             currentPlayer = players.First();
-            var grid = new Grid();
-            userInterface.PresentLatestGrid(grid);
-            userInterface.GetNextMove();
+            userInterface.PresentLatestGrid(Grid);
+            while (GameCompleted() == false)
+            {
+                var move = userInterface.GetNextMove();
+                Grid.SetCell(move.Value, move.Key);
+                ToggleCurrentPlayer();
+            }
+            gameRunning = GameState.Completed;
         }
 
         public Player ToggleCurrentPlayer()

@@ -19,7 +19,7 @@ namespace TicTacToeTests
             userInterfaceMock.Setup(x => x.GetCurrentPlayer()).Callback(() => methodsInvoked.Add("GetCurrentPlayer"));
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
             userInterfaceMock.Setup(x => x.GetNextMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
-            userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity")); ;
+            userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
         }
 
         public GameServiceTests()
@@ -143,6 +143,59 @@ namespace TicTacToeTests
             var player2 = gameService.ToggleCurrentPlayer();
             Assert.Contains(player1, examplePlayerArray);
             Assert.Contains(player2, examplePlayerArray);
+        }
+
+        [Fact]
+        public void CurrentPlayerAlternatesCorrectlyAsNextMovesAreCalled()
+        {
+            var playerRequestedList = new List<Player>();
+            userInterfaceMock.Setup(x => x.GetNextMove()).Callback(() => playerRequestedList.Add(gameService.GetCurrentPlayer()));
+            gameService.LaunchGame();
+            var player1 = examplePlayerArray.First();
+            var player2 = examplePlayerArray.Last();
+            var player1Indexes = new List<int>();
+            var player2Indexes = new List<int>();
+            for (int playerIndex = 0; playerIndex < playerRequestedList.Count; playerIndex++)
+            {
+                var thisPlayer = playerRequestedList[playerIndex];
+                if (thisPlayer == player1)
+                {
+                    player1Indexes.Add(playerIndex);
+                } else if (thisPlayer == player2) {
+                    player2Indexes.Add(playerIndex);
+                }
+            }
+            var modulusedPlayer1TurnIndexes = player1Indexes.Select(x => x % 2).Distinct().ToList(); // Ensure these are distinct, even or odd indexes
+            var modulusedPlayer2TurnIndexes = player2Indexes.Select(x => x % 2).Distinct().ToList();
+            Assert.Equal(modulusedPlayer1TurnIndexes.Count, 1);
+            Assert.Equal(modulusedPlayer2TurnIndexes.Count, 1);
+            Assert.Equal(0, modulusedPlayer1TurnIndexes.First()); // First player should have taken the first turn, so they will take the even turns;
+            Assert.Equal(1, modulusedPlayer2TurnIndexes.First()); // Second player should have taken the second turn, so they will take the odd turns;
+        }
+
+        [Fact]
+        public void GameCompletedIsInitiallyFalse()
+        {
+            bool gameCompleted = gameService.GameCompleted();
+            Assert.False(gameCompleted);
+        }
+
+        [Fact]
+        public void GameIsComplatedAfterLaunchHasBeenExecuted()
+        {
+            gameService.LaunchGame();
+            Assert.True(gameService.GameCompleted());
+        }
+
+        [Fact]
+        public void GridIsInAValidCompletedStateAfterGameCompletes()
+        {
+            gameService.LaunchGame();
+            Assert.True(gameService.GameCompleted());
+            Grid grid = gameService.Grid;
+            var listOfCompletedLines = grid.GetCompletedLines();
+            var listOfAvailableCells = grid.GetAvailableCells();
+            Assert.True(listOfCompletedLines.Count > 0 || listOfAvailableCells.Count == 0);
         }
     }
 }
