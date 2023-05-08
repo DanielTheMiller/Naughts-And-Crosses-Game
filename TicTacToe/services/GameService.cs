@@ -58,6 +58,7 @@ namespace TicTacToe.Services
             userInterface.PresentLatestGrid(Grid);
             while (GameCompleted() == false)
             {
+                userInterface.SetCurrentPlayer(currentPlayer);
                 var move = userInterface.GetNextMove();
                 Grid.SetCell(move.Value, move.Key);
                 ToggleCurrentPlayer();

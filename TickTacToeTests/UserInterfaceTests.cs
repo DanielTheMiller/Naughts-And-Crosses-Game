@@ -1,15 +1,7 @@
 ﻿using Moq;
-using NuGet.Frameworks;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
-using TicTacToe.Services;
 
 namespace TicTacToeTests
 {
@@ -38,9 +30,9 @@ namespace TicTacToeTests
 
         [Fact]
         public void CanTriggerEstablishPlayerIdentity() {
-            userInterface.EstablishPlayerIdentity();
-            Assert.NotNull(userInterface.Players);
-            Assert.Equal(2 , userInterface.Players.Count);
+            var players = userInterface.EstablishPlayerIdentity();
+            Assert.NotNull(players);
+            Assert.Equal(2 , players.Count);
         }
 
         [Fact]
@@ -52,18 +44,10 @@ namespace TicTacToeTests
         }
 
         [Fact]
-        public void InitiallyReturnFirstPlayerAsTheCurrentPlayer()
-        {
-            userInterface.EstablishPlayerIdentity();
-            var currentPlayer = userInterface.GetCurrentPlayer();
-            Assert.NotNull(currentPlayer);
-            Assert.Equal(userInterface.Players.First(), currentPlayer);
-        }
-
-        [Fact]
         public void GetNextMoveFromUIHasValidParams()
         {
-            userInterface.EstablishPlayerIdentity();
+            var playerList = userInterface.EstablishPlayerIdentity();
+            userInterface.SetCurrentPlayer(playerList.First());
             commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
             KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
             Assert.NotNull(nextMove);
@@ -79,7 +63,8 @@ namespace TicTacToeTests
         [Fact]
         public void UIGetsNextMoveFromTheCommandLine()
         {
-            userInterface.EstablishPlayerIdentity();
+            var playerList = userInterface.EstablishPlayerIdentity();
+            userInterface.SetCurrentPlayer(playerList.First());
             commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
             KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
             commandLineInputServiceMock.Verify(x => x.ReadNextInput(It.Is<string>((inputCommand) => inputCommand.Contains(INSERT_NEXT_MOVE_PROMPT)))); // Using a contains because this prompt should be personalised
@@ -88,7 +73,8 @@ namespace TicTacToeTests
         [Fact]
         public void UIReturnsAppropriatePointForGivenIndexFromCommandLine()
         {
-            userInterface.EstablishPlayerIdentity();
+            var playerList = userInterface.EstablishPlayerIdentity();
+            userInterface.SetCurrentPlayer(playerList.First());
             var pointIndex = 1;
             Action<ICommandLineInputService> previousExpression = (s) => { return; };
             for (int yIndex = 0; yIndex <= 2; yIndex++)
@@ -107,7 +93,8 @@ namespace TicTacToeTests
         [Fact]
         public void EnsureGetNextMoveReturnsCurrentPlayersToken()
         {
-            userInterface.EstablishPlayerIdentity();
+            var playerList = userInterface.EstablishPlayerIdentity();
+            userInterface.SetCurrentPlayer(playerList.First());
             var currentPlayer = userInterface.GetCurrentPlayer();
             commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
             var nextMove = userInterface.GetNextMove();
@@ -117,7 +104,8 @@ namespace TicTacToeTests
         [Fact]
         public void UserProvidingNonNumberShouldNotThrowException()
         {
-            userInterface.EstablishPlayerIdentity();
+            var playerList = userInterface.EstablishPlayerIdentity();
+            userInterface.SetCurrentPlayer(playerList.First());
             commandLineInputServiceMock.SetupSequence(s => s.ReadNextInput(It.IsAny<string>()))
                 .Returns("Not a number")
                 .Returns("1");
@@ -165,6 +153,16 @@ namespace TicTacToeTests
             }
             userInterface.PresentLatestGrid(grid);
             commandLineInputServiceMock.Verify(x => x.WritePrompt(expectedResult), Times.Once);
+        }
+
+        [Fact]
+        public void EnsureUIHasSetCurrentPlayer()
+        {
+            Player player = new Player("TestPlayer", 'X');
+            userInterface.SetCurrentPlayer(player);
+            var currentPlayer = userInterface.GetCurrentPlayer();
+            Assert.NotNull(currentPlayer);
+            Assert.Equal(player, currentPlayer);
         }
     }
 }

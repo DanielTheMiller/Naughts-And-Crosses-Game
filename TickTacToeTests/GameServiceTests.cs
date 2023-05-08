@@ -18,6 +18,7 @@ namespace TicTacToeTests
         {
             userInterfaceMock.Setup(x => x.IntroduceGame()).Callback(() => methodsInvoked.Add("IntroduceGame"));
             userInterfaceMock.Setup(x => x.GetCurrentPlayer()).Callback(() => methodsInvoked.Add("GetCurrentPlayer"));
+            userInterfaceMock.Setup(x => x.SetCurrentPlayer(It.IsAny<Player>())).Callback(() => methodsInvoked.Add("SetCurrentPlayer"));
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
             userInterfaceMock.Setup(x => x.GetNextMove()).Returns(() => GetNextRandomMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
             userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
@@ -120,6 +121,15 @@ namespace TicTacToeTests
             Assert.True(introduceGameCallOrder < establishPlayerIdentityCallOrder, "IntroduceGame was called after EstablishPlayerIdentity! (The wrong order!)");
             Assert.True(establishPlayerIdentityCallOrder < presentGridCallOrder, "establishPlayerIdentity was called after presentGrid! (The wrong order!)");
             Assert.True(presentGridCallOrder < getNextMoveCallOrder, "presentGrid was called after GetNextMove! (The wrong order!)");
+        }
+
+        [Fact]
+        public void ServiceSetsCurrentPlayerOnUIBeforeRequestingNextMove()
+        {
+            gameService.LaunchGame();
+            var setCurrentPlayerCallOrder = GetFirstMethodInvocationIndex("SetCurrentPlayer");
+            var getNextMoveCallOrder = GetFirstMethodInvocationIndex("GetNextMove");
+            Assert.True(setCurrentPlayerCallOrder < getNextMoveCallOrder);
         }
 
         [Fact]
