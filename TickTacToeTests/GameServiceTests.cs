@@ -11,7 +11,7 @@ namespace TicTacToeTests
     {
         Mock<IUserInterface> userInterfaceMock;
         IGameService gameService;
-        List<string> methodsInvoked = new(); //TODO: Remember to setup mocks so they feed this list
+        List<string> methodsInvoked = new();
         List<Player> examplePlayerArray = new() { new("P1", 'O'), new("P2", 'X') };
 
         private void SetupMethods()

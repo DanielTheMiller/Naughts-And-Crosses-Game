@@ -164,5 +164,11 @@ namespace TicTacToeTests
             Assert.NotNull(currentPlayer);
             Assert.Equal(player, currentPlayer);
         }
+
+        [Fact]
+        public void UserIsNotAllowedToPlaceTokenOnOccupiedTile()
+        {
+            throw new NotImplementedException(); // TODO: Implement this
+        }
     }
 }
