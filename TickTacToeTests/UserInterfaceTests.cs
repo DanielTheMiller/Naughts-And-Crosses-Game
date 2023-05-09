@@ -168,7 +168,15 @@ namespace TicTacToeTests
         [Fact]
         public void UserIsNotAllowedToPlaceTokenOnOccupiedTile()
         {
-            throw new NotImplementedException(); // TODO: Implement this
+            var playerList = userInterface.EstablishPlayerIdentity();
+            userInterface.SetCurrentPlayer(playerList.First());
+            commandLineInputServiceMock.SetupSequence(s => s.ReadNextInput(It.IsAny<string>()))
+                .Returns("1")
+                .Returns("1") // This sequence will try cell 1 again
+                .Returns("2"); // And then return 2 if further prompted to
+            var move1 = userInterface.GetNextMove();
+            var move2 = userInterface.GetNextMove();
+            Assert.NotEqual(move1.Value, move2.Value);
         }
     }
 }
