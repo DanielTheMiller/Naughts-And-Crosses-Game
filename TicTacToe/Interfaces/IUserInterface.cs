@@ -10,13 +10,13 @@ namespace TicTacToe.Interfaces
 {
     public interface IUserInterface
     {
-        List<Player> Players { get; }
-
         public List<Player> EstablishPlayerIdentity();
 
         public Player GetCurrentPlayer();
 
-        public KeyValuePair<char, Point> GetNextMove();
+        public void SetCurrentPlayer(Player player);
+
+        public KeyValuePair<char, Point> GetNextMove(Grid grid);
 
         public void IntroduceGame();
 

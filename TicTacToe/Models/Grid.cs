@@ -59,6 +59,11 @@ namespace TicTacToe.Models
             }
         }
 
+        public bool IsCellOccupied(Point point)
+        {
+            return grid.ContainsKey(point);
+        }
+
         public IDictionary<int, char> GetMoves()
         {
             return grid.ToDictionary(x => GetIndexFromPoint(x.Key), x => x.Value);

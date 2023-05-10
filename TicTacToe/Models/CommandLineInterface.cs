@@ -13,7 +13,7 @@ namespace TicTacToe.Models
     {
         private ICommandLineInputService _commandLineInterface;
 
-        public List<Player> Players { get; private set; }
+        private Player currentPlayer;
 
         const string INCORRECT_INPUT_TRY_AGAIN_PROMPT = "Your input must be a number between 1 and 9. Try again";
         const string INTRODUCE_GAME = "Welcome to Tic-Tac-Toe!";
@@ -21,24 +21,29 @@ namespace TicTacToe.Models
         public CommandLineInterface(ICommandLineInputService commandLineInterfaceService)
         {
             _commandLineInterface = commandLineInterfaceService;
-            Players = new List<Player>();
         }
 
         public List<Player> EstablishPlayerIdentity()
         {
+            List<Player> players = new List<Player>();
             var player1name = _commandLineInterface.ReadNextInput("Insert the name of Player 1:");
-            Players.Add(new Player(player1name, 'X'));
+            players.Add(new Player(player1name, 'X'));
             var player2name = _commandLineInterface.ReadNextInput("Insert the name of Player 2:");
-            Players.Add(new Player(player2name, 'O'));
-            return Players;
+            players.Add(new Player(player2name, 'O'));
+            return players;
         }
 
         public Player GetCurrentPlayer()
         {
-            return Players.First();
+            return currentPlayer;
         }
 
-        public KeyValuePair<char, Point> GetNextMove()
+        public void SetCurrentPlayer(Player newPlayer)
+        {
+            currentPlayer = newPlayer;
+        }
+
+        public KeyValuePair<char, Point> GetNextMove(Grid grid)
         {
             while (true)
             {
@@ -50,6 +55,10 @@ namespace TicTacToe.Models
                 if (nextInputWasInteger)
                 {
                     var nextPoint = Grid.GetPointFromIndex(nextMoveIndexInt);
+                    if (grid.IsCellOccupied(nextPoint))
+                    {
+                        continue;
+                    }
                     return new KeyValuePair<char, Point>(currentPlayer.Token, nextPoint);
                 }
                 _commandLineInterface.WritePrompt(INCORRECT_INPUT_TRY_AGAIN_PROMPT);
