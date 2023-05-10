@@ -20,7 +20,7 @@ namespace TicTacToeTests
             userInterfaceMock.Setup(x => x.GetCurrentPlayer()).Callback(() => methodsInvoked.Add("GetCurrentPlayer"));
             userInterfaceMock.Setup(x => x.SetCurrentPlayer(It.IsAny<Player>())).Callback(() => methodsInvoked.Add("SetCurrentPlayer"));
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
-            userInterfaceMock.Setup(x => x.GetNextMove()).Returns(() => GetNextRandomMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
+            userInterfaceMock.Setup(x => x.GetNextMove(It.IsAny<Grid>())).Returns(() => GetNextRandomMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
             userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
         }
 
@@ -110,7 +110,7 @@ namespace TicTacToeTests
             gameService.LaunchGame();
             userInterfaceMock.Verify(x => x.IntroduceGame(), Times.Once);
             userInterfaceMock.Verify(x => x.EstablishPlayerIdentity(), Times.Once);
-            userInterfaceMock.Verify(x => x.GetNextMove(), Times.AtLeastOnce);
+            userInterfaceMock.Verify(x => x.GetNextMove(It.IsAny<Grid>()), Times.AtLeastOnce);
             userInterfaceMock.Verify(x => x.PresentLatestGrid(It.IsAny<Grid>()), Times.AtLeastOnce);
 
             var establishPlayerIdentityCallOrder = GetFirstMethodInvocationIndex("EstablishPlayerIdentity");
@@ -172,7 +172,7 @@ namespace TicTacToeTests
         public void CurrentPlayerAlternatesCorrectlyAsNextMovesAreCalled()
         {
             var playerRequestedList = new List<Player>();
-            userInterfaceMock.Setup(x => x.GetNextMove()).Returns(() => GetNextRandomMove()).Callback(() => playerRequestedList.Add(gameService.GetCurrentPlayer()));
+            userInterfaceMock.Setup(x => x.GetNextMove(It.IsAny<Grid>())).Returns(() => GetNextRandomMove()).Callback(() => playerRequestedList.Add(gameService.GetCurrentPlayer()));
             gameService.LaunchGame();
             var player1 = examplePlayerArray.First();
             var player2 = examplePlayerArray.Last();

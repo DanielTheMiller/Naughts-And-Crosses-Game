@@ -9,6 +9,7 @@ namespace TicTacToeTests
     {
         IUserInterface userInterface;
         Mock<ICommandLineInputService> commandLineInputServiceMock;
+        Grid grid;
 
         const string GET_PLAYER_1_NAME = "Insert the name of Player 1:";
         const string GET_PLAYER_2_NAME = "Insert the name of Player 2:";
@@ -18,6 +19,7 @@ namespace TicTacToeTests
 
         public UserInterfaceTests()
         {
+            grid = new();
             commandLineInputServiceMock = new Mock<ICommandLineInputService>();
             userInterface = new CommandLineInterface(commandLineInputServiceMock.Object);
         }
@@ -49,7 +51,7 @@ namespace TicTacToeTests
             var playerList = userInterface.EstablishPlayerIdentity();
             userInterface.SetCurrentPlayer(playerList.First());
             commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
-            KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
+            KeyValuePair<char, Point> nextMove = userInterface.GetNextMove(grid);
             Assert.NotNull(nextMove);
             Assert.NotNull(nextMove.Key);
             Assert.NotNull(nextMove.Value);
@@ -66,7 +68,7 @@ namespace TicTacToeTests
             var playerList = userInterface.EstablishPlayerIdentity();
             userInterface.SetCurrentPlayer(playerList.First());
             commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
-            KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
+            KeyValuePair<char, Point> nextMove = userInterface.GetNextMove(grid);
             commandLineInputServiceMock.Verify(x => x.ReadNextInput(It.Is<string>((inputCommand) => inputCommand.Contains(INSERT_NEXT_MOVE_PROMPT)))); // Using a contains because this prompt should be personalised
         }
 
@@ -82,7 +84,7 @@ namespace TicTacToeTests
                 for (int xIndex = 0; xIndex <= 2; xIndex++)
                 {
                     commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns(pointIndex.ToString());
-                    KeyValuePair<char, Point> nextMove = userInterface.GetNextMove();
+                    KeyValuePair<char, Point> nextMove = userInterface.GetNextMove(grid);
                     var point = nextMove.Value;
                     Assert.True(point.X == xIndex && point.Y == yIndex, $"Was expecting Point(x:{xIndex}, y:{yIndex}) from index {pointIndex}; But instead got Point(x:{point.X}, y:{point.Y})");
                     pointIndex++;
@@ -97,7 +99,7 @@ namespace TicTacToeTests
             userInterface.SetCurrentPlayer(playerList.First());
             var currentPlayer = userInterface.GetCurrentPlayer();
             commandLineInputServiceMock.Setup(s => s.ReadNextInput(It.IsAny<string>())).Returns("3");
-            var nextMove = userInterface.GetNextMove();
+            var nextMove = userInterface.GetNextMove(grid);
             Assert.Equal(nextMove.Key, currentPlayer.Token);
         }
 
@@ -109,7 +111,7 @@ namespace TicTacToeTests
             commandLineInputServiceMock.SetupSequence(s => s.ReadNextInput(It.IsAny<string>()))
                 .Returns("Not a number")
                 .Returns("1");
-            var nextMove = userInterface.GetNextMove();
+            var nextMove = userInterface.GetNextMove(grid);
             Assert.NotNull(nextMove);
         }
 
@@ -174,8 +176,10 @@ namespace TicTacToeTests
                 .Returns("1")
                 .Returns("1") // This sequence will try cell 1 again
                 .Returns("2"); // And then return 2 if further prompted to
-            var move1 = userInterface.GetNextMove();
-            var move2 = userInterface.GetNextMove();
+            var move1 = userInterface.GetNextMove(grid);
+            grid.SetCell(move1.Value, move1.Key);
+            var move2 = userInterface.GetNextMove(grid);
+            grid.SetCell(move2.Value, move2.Key);
             Assert.NotEqual(move1.Value, move2.Value);
         }
     }

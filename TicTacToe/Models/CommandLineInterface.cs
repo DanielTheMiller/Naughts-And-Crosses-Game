@@ -43,7 +43,7 @@ namespace TicTacToe.Models
             currentPlayer = newPlayer;
         }
 
-        public KeyValuePair<char, Point> GetNextMove()
+        public KeyValuePair<char, Point> GetNextMove(Grid grid)
         {
             while (true)
             {
@@ -55,6 +55,10 @@ namespace TicTacToe.Models
                 if (nextInputWasInteger)
                 {
                     var nextPoint = Grid.GetPointFromIndex(nextMoveIndexInt);
+                    if (grid.IsCellOccupied(nextPoint))
+                    {
+                        continue;
+                    }
                     return new KeyValuePair<char, Point>(currentPlayer.Token, nextPoint);
                 }
                 _commandLineInterface.WritePrompt(INCORRECT_INPUT_TRY_AGAIN_PROMPT);

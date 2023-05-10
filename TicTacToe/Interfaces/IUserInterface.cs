@@ -16,7 +16,7 @@ namespace TicTacToe.Interfaces
 
         public void SetCurrentPlayer(Player player);
 
-        public KeyValuePair<char, Point> GetNextMove();
+        public KeyValuePair<char, Point> GetNextMove(Grid grid);
 
         public void IntroduceGame();
 

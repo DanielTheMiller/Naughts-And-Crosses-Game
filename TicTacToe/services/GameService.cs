@@ -59,7 +59,7 @@ namespace TicTacToe.Services
             {
                 userInterface.PresentLatestGrid(Grid);
                 userInterface.SetCurrentPlayer(currentPlayer);
-                var move = userInterface.GetNextMove();
+                var move = userInterface.GetNextMove(Grid);
                 Grid.SetCell(move.Value, move.Key);
                 ToggleCurrentPlayer();
             }

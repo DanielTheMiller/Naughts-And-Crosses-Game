@@ -10,6 +10,8 @@ namespace TicTacToe.Interfaces
 
         void SetCell(Point coord, char token);
 
+        bool IsCellOccupied(Point coord);
+
         /// <summary>
         /// Return a dictionary of pointIndexes and tokens in them
         /// </summary>
