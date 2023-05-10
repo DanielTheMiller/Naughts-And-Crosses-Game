@@ -89,12 +89,28 @@ namespace TicTacToeTests
         }
 
         /// <summary>
+        /// Checks Method has been invoked and returns index (index in methodsInvoked list) of the last call
+        /// </summary>
+        /// <param name="methodName">The method name to search for</param>
+        /// <param name="assertMethodPresent">Should this method throw an error if this property cannot be found?</param>
+        /// <returns></returns>
+        private int GetLastMethodInvocationIndex(string methodName, bool assertMethodPresent=true)
+        {
+            var callOrderIndex = methodsInvoked.LastIndexOf(methodName);
+            if (assertMethodPresent)
+            {
+                Assert.True(callOrderIndex >= 0);
+            }
+            return callOrderIndex;
+        }
+
+        /// <summary>
         /// Checks Method has been invoked and returns order (index in methodsInvoked list) of first call
         /// </summary>
         /// <param name="methodName">The method name to search for</param>
         /// <param name="assertMethodPresent">Should this method throw an error if this property cannot be found?</param>
         /// <returns></returns>
-        private int GetFirstMethodInvocationIndex(string methodName, bool assertMethodPresent=true)
+        private int GetFirstMethodInvocationIndex(string methodName, bool assertMethodPresent = true)
         {
             var callOrderIndex = methodsInvoked.IndexOf(methodName);
             if (assertMethodPresent)
@@ -229,6 +245,18 @@ namespace TicTacToeTests
             var numberOfPresentLatestGridCalls = methodsInvoked.Count(x => x == "PresentLatestGrid");
             Assert.True(numberOfNextMoveCalls > 0);
             Assert.Equal(numberOfNextMoveCalls, numberOfPresentLatestGridCalls);
+        }
+
+        [Fact]
+        public void PresentResultsIsCalledAfterGameCompletes()
+        {
+            gameService.LaunchGame();
+            Assert.True(gameService.GameCompleted());
+
+            var presentResultsCallOrder = GetLastMethodInvocationIndex("PresentResults");
+            var getNextMoveLastCall = GetLastMethodInvocationIndex("GetNextMove");
+            Assert.True(getNextMoveLastCall < presentResultsCallOrder, "The game requested another move after the results screen");
+            Assert.True(methodsInvoked.Count(x => x == "PresentResults") == 1, "Expected the results to only be presented to the users once");
         }
     }
 }
