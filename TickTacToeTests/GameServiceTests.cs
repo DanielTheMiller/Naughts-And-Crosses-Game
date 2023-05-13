@@ -22,7 +22,7 @@ namespace TicTacToeTests
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
             userInterfaceMock.Setup(x => x.GetNextMove(It.IsAny<Grid>())).Returns(() => GetNextRandomMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
             userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
-            userInterfaceMock.Setup(x => x.PresentResults()).Callback(() => methodsInvoked.Add("PresentResults"));
+            userInterfaceMock.Setup(x => x.PresentResults(It.IsAny<Grid>(), It.IsAny<Player>())).Callback(() => methodsInvoked.Add("PresentResults"));
         }
 
         /// <summary>
@@ -258,6 +258,51 @@ namespace TicTacToeTests
             var getNextMoveLastCall = GetLastMethodInvocationIndex("GetNextMove");
             Assert.True(getNextMoveLastCall < presentResultsCallOrder, "The game requested another move after the results screen");
             Assert.True(methodsInvoked.Count(x => x == "PresentResults") == 1, "Expected the results to only be presented to the users once");
+        }
+
+        [Fact]
+        public void GetWinningPlayerReturnsPlayer1()
+        {
+            var playerMember = typeof(GameService).GetField("players", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(playerMember);
+            var players = new List<Player>() { new(name: "Player1", token: 'X'), new(name: "Player2", token: 'O') };
+            playerMember.SetValue(gameService, players);
+            gameService.Grid.SetCell(new(0,0), 'X');
+            gameService.Grid.SetCell(new(1,0), 'X');
+            gameService.Grid.SetCell(new(2,0), 'X');
+            var winningPlayer = gameService.GetWinningPlayer();
+            Assert.NotNull(winningPlayer);
+            Assert.Equal(players.First(), winningPlayer);
+        }
+
+        [Fact]
+        public void GetWinningPlayerReturnsPlayer2()
+        {
+            var playerMember = typeof(GameService).GetField("players", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(playerMember);
+            var players = new List<Player>() { new(name: "Player1", token: 'O'), new(name: "Player2", token: 'X') };
+            playerMember.SetValue(gameService, players);
+            gameService.Grid.SetCell(new(0, 0), 'X');
+            gameService.Grid.SetCell(new(1, 0), 'X');
+            gameService.Grid.SetCell(new(2, 0), 'X');
+            var winningPlayer = gameService.GetWinningPlayer();
+            Assert.NotNull(winningPlayer);
+            Assert.Equal(players.Last(), winningPlayer);
+        }
+
+        [Fact]
+        public void GetWinningPlayerReturnsOTokenPlayer()
+        {
+            var playerMember = typeof(GameService).GetField("players", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(playerMember);
+            var players = new List<Player>() { new(name: "Player1", token: 'O'), new(name: "Player2", token: 'X') };
+            playerMember.SetValue(gameService, players);
+            gameService.Grid.SetCell(new(0, 0), 'O');
+            gameService.Grid.SetCell(new(0, 1), 'O');
+            gameService.Grid.SetCell(new(0, 2), 'O');
+            var winningPlayer = gameService.GetWinningPlayer();
+            Assert.NotNull(winningPlayer);
+            Assert.Equal(players.First(), winningPlayer);
         }
     }
 }

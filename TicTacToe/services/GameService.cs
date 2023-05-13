@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TicTacToe.Interfaces;
+﻿using TicTacToe.Interfaces;
 using TicTacToe.Models;
 using TicTacToe.Models.Enums;
 
@@ -28,6 +23,17 @@ namespace TicTacToe.Services
         public Player GetCurrentPlayer()
         {            
             return currentPlayer;
+        }
+
+        public Player GetWinningPlayer()
+        {
+            var completedLine = Grid.GetCompletedLines().FirstOrDefault();
+            if (completedLine == null)
+            {
+                throw new Exception("GetWinningPlayer called when there are no winning players");
+            }
+            var token = completedLine.First();
+            return players.First(x => x.Token == token);
         }
 
         public bool GameCompleted()
@@ -63,7 +69,7 @@ namespace TicTacToe.Services
                 Grid.SetCell(move.Value, move.Key);
                 ToggleCurrentPlayer();
             }
-            userInterface.PresentResults();
+            userInterface.PresentResults(Grid, currentPlayer); // TODO: Change current player to winning player
             gameRunning = GameState.Completed;
         }
 

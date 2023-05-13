@@ -15,6 +15,9 @@ namespace TicTacToeTests
         const string GET_PLAYER_2_NAME = "Insert the name of Player 2:";
         const string INSERT_NEXT_MOVE_PROMPT = ", Insert a number to place your next move:";
         const string INITIAL_GRID_STRING = "1|2|3\n4|5|6\n7|8|9";
+        const string GAME_OVER_PROMPT = "--- GAME OVER ---";
+        const string WINNER_PROMPT = "The winner was {0} ({1})!\nGoodbye!";
+        const string STALEMATE_PROMPT = "There was no winner! How inconclusive! We've wasted our time for nothing! Fantastic!\nGoodbye!";
         private readonly char[] validTokens = new char[] { 'X', 'O' }; 
 
         public UserInterfaceTests()
@@ -181,6 +184,35 @@ namespace TicTacToeTests
             var move2 = userInterface.GetNextMove(grid);
             grid.SetCell(move2.Value, move2.Key);
             Assert.NotEqual(move1.Value, move2.Value);
+        }
+
+        [Fact]
+        public void PresentResultsDisplaysFinalGridToUser()
+        {
+            var finalGrid = new Grid();
+            finalGrid.SetCell(new(0, 0), 'X');
+            finalGrid.SetCell(new(1, 0), 'X');
+            finalGrid.SetCell(new(2, 0), 'X');
+            userInterface.PresentResults(finalGrid, null);
+            var expectedGridOutput = "X|X|X\n4|5|6\n7|8|9";
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(expectedGridOutput), Times.Once);
+        }
+
+        [Fact]
+        public void PresentResultsPrintsGameOver()
+        {
+            var finalGrid = new Grid();
+            userInterface.PresentResults(finalGrid, null);
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(GAME_OVER_PROMPT), Times.Once);
+        }
+
+        [Fact]
+        public void PresentResultsDeclaresTheWinner()
+        {
+            var finalGrid = new Grid();
+            var winningPlayer = new Player(name: "Daniel", 'X');
+            userInterface.PresentResults(finalGrid, winningPlayer);
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(String.Format(WINNER_PROMPT, "Daniel", 'X')));
         }
     }
 }

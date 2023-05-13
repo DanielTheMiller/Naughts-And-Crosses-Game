@@ -15,6 +15,8 @@ namespace TicTacToe.Interfaces
 
         public Player GetCurrentPlayer();
 
+        public Player GetWinningPlayer();
+
         public bool GameCompleted();
 
         /// <summary>
