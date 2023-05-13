@@ -22,6 +22,7 @@ namespace TicTacToeTests
             userInterfaceMock.Setup(x => x.PresentLatestGrid(It.IsAny<Grid>())).Callback(() => methodsInvoked.Add("PresentLatestGrid"));
             userInterfaceMock.Setup(x => x.GetNextMove(It.IsAny<Grid>())).Returns(() => GetNextRandomMove()).Callback(() => methodsInvoked.Add("GetNextMove"));
             userInterfaceMock.Setup(x => x.EstablishPlayerIdentity()).Returns(examplePlayerArray).Callback(() => methodsInvoked.Add("EstablishPlayerIdentity"));
+            userInterfaceMock.Setup(x => x.PresentResults()).Callback(() => methodsInvoked.Add("PresentResults"));
         }
 
         /// <summary>

@@ -21,5 +21,7 @@ namespace TicTacToe.Interfaces
         public void IntroduceGame();
 
         public void PresentLatestGrid(Grid grid);
+
+        public void PresentResults();
     }
 }

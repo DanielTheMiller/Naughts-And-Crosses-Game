@@ -63,6 +63,7 @@ namespace TicTacToe.Services
                 Grid.SetCell(move.Value, move.Key);
                 ToggleCurrentPlayer();
             }
+            userInterface.PresentResults();
             gameRunning = GameState.Completed;
         }
 

@@ -82,5 +82,10 @@ namespace TicTacToe.Models
             }
             _commandLineInterface.WritePrompt(stringifiedGrid);
         }
+
+        public void PresentResults()
+        {
+
+        }
     }
 }
