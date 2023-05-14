@@ -193,7 +193,8 @@ namespace TicTacToeTests
             finalGrid.SetCell(new(0, 0), 'X');
             finalGrid.SetCell(new(1, 0), 'X');
             finalGrid.SetCell(new(2, 0), 'X');
-            userInterface.PresentResults(finalGrid, null);
+            var winningPlayer = new Player(name: "Daniel", 'X');
+            userInterface.PresentResults(finalGrid, winningPlayer);
             var expectedGridOutput = "X|X|X\n4|5|6\n7|8|9";
             commandLineInputServiceMock.Verify(x => x.WritePrompt(expectedGridOutput), Times.Once);
         }
@@ -202,7 +203,8 @@ namespace TicTacToeTests
         public void PresentResultsPrintsGameOver()
         {
             var finalGrid = new Grid();
-            userInterface.PresentResults(finalGrid, null);
+            var winningPlayer = new Player(name: "Daniel", 'X');
+            userInterface.PresentResults(finalGrid, winningPlayer);
             commandLineInputServiceMock.Verify(x => x.WritePrompt(GAME_OVER_PROMPT), Times.Once);
         }
 
@@ -213,6 +215,27 @@ namespace TicTacToeTests
             var winningPlayer = new Player(name: "Daniel", 'X');
             userInterface.PresentResults(finalGrid, winningPlayer);
             commandLineInputServiceMock.Verify(x => x.WritePrompt(String.Format(WINNER_PROMPT, "Daniel", 'X')));
+        }
+
+        [Fact]
+        public void PresentResultsReturnsStalematePromptIfGridIsInconclusive()
+        {
+            var finalGrid = new Grid();
+            finalGrid.SetCell(new(0, 0), 'X');
+            finalGrid.SetCell(new(0, 1), 'O');
+            finalGrid.SetCell(new(0, 2), 'O');
+            
+            finalGrid.SetCell(new(1, 0), 'O');
+            finalGrid.SetCell(new(1, 1), 'O');
+            finalGrid.SetCell(new(1, 2), 'X');
+            
+            finalGrid.SetCell(new(2, 0), 'X');
+            finalGrid.SetCell(new(2, 1), 'X');
+            finalGrid.SetCell(new(2, 2), 'O');
+
+            Assert.Empty(finalGrid.GetCompletedLines());
+            userInterface.PresentResults(finalGrid, null);
+            commandLineInputServiceMock.Verify(x => x.WritePrompt(STALEMATE_PROMPT));
         }
     }
 }

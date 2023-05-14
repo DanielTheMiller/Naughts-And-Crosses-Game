@@ -18,6 +18,7 @@ namespace TicTacToe.Models
         const string INCORRECT_INPUT_TRY_AGAIN_PROMPT = "Your input must be a number between 1 and 9. Try again";
         const string INTRODUCE_GAME = "Welcome to Tic-Tac-Toe!";
         const string WINNER_PROMPT = "The winner was {0} ({1})!\nGoodbye!";
+        const string STALEMATE_PROMPT = "There was no winner! How inconclusive! We've wasted our time for nothing! Fantastic!\nGoodbye!";
 
         public CommandLineInterface(ICommandLineInputService commandLineInterfaceService)
         {
@@ -88,7 +89,12 @@ namespace TicTacToe.Models
         {
             _commandLineInterface.WritePrompt("--- GAME OVER ---");
             PresentLatestGrid(grid);
-            _commandLineInterface.WritePrompt(String.Format(WINNER_PROMPT, player, player.Token));
+            if (player == null)
+            {
+                _commandLineInterface.WritePrompt(STALEMATE_PROMPT);
+                return;
+            }
+            _commandLineInterface.WritePrompt(String.Format(WINNER_PROMPT, player.Name, player.Token));
         }
     }
 }

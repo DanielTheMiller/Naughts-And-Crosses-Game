@@ -4,6 +4,7 @@ using System.Reflection;
 using TicTacToe.Interfaces;
 using TicTacToe.Models;
 using TicTacToe.Services;
+using TicTacToeTests.Resources;
 
 namespace TicTacToeTests
 {
@@ -303,6 +304,14 @@ namespace TicTacToeTests
             var winningPlayer = gameService.GetWinningPlayer();
             Assert.NotNull(winningPlayer);
             Assert.Equal(players.First(), winningPlayer);
+        }
+
+        [Fact]
+        public void GetWinningPlayerReturnsNullTokenIfGridIsStalemate()
+        {
+            var stalemateGrid = ExampleGrids.GetRandomStalemateGrid();
+            Assert.NotNull(stalemateGrid);
+            Assert.Equal(0, stalemateGrid.GetCompletedLines().Count);
         }
     }
 }
