@@ -313,5 +313,19 @@ namespace TicTacToeTests
             Assert.NotNull(stalemateGrid);
             Assert.Equal(0, stalemateGrid.GetCompletedLines().Count);
         }
+
+        [Fact]
+        public void EnsureDiagonalWinnerIsPresented()
+        {
+            userInterfaceMock.SetupSequence(x => x.GetNextMove(It.IsAny<Grid>()))
+                .Returns(() => new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, new(1, 0)))
+                .Returns(() => new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, new(0, 0)))
+                .Returns(() => new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, new(2, 0)))
+                .Returns(() => new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, new(1, 1)))
+                .Returns(() => new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, new(2, 1)))
+                .Returns(() => new KeyValuePair<char, Point>(gameService.GetCurrentPlayer().Token, new(2, 2)));
+            gameService.LaunchGame();
+            userInterfaceMock.Verify(x => x.PresentResults(It.IsAny<Grid>(), examplePlayerArray.Last()), Times.Once);
+        }
     }
 }

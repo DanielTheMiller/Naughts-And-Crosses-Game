@@ -69,7 +69,7 @@ namespace TicTacToe.Services
                 Grid.SetCell(move.Value, move.Key);
                 ToggleCurrentPlayer();
             }
-            userInterface.PresentResults(Grid, currentPlayer); // TODO: Change current player to winning player
+            userInterface.PresentResults(Grid, GetWinningPlayer()); // TODO: Change current player to winning player
             gameRunning = GameState.Completed;
         }
 
